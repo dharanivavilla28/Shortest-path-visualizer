@@ -228,6 +228,7 @@
             <label>Load Dataset</label>
             <select id="dataset-selector">
                 <option value="default">City Grid (15 Nodes)</option>
+                <option value="india">India Map (10 Cities)</option>
                 <option value="complex">Complex Network (30 Nodes)</option>
                 <option value="random">Random Graph (12 Nodes)</option>
             </select>
@@ -550,30 +551,69 @@ const DefaultGraph = {
     ]
 };
 
-function initGraph() {
+const IndiaGraph = {
+    nodes: [
+        { id: 'DEL', label: 'Delhi', x: 0, y: -250 },
+        { id: 'MUM', label: 'Mumbai', x: -100, y: 50 },
+        { id: 'HYD', label: 'Hyderabad', x: 20, y: 120 },
+        { id: 'BLR', label: 'Bangalore', x: -10, y: 220 },
+        { id: 'CHN', label: 'Chennai', x: 70, y: 200 },
+        { id: 'KOL', label: 'Kolkata', x: 250, y: -50 },
+        { id: 'PUN', label: 'Pune', x: -80, y: 80 },
+        { id: 'AMD', label: 'Ahmedabad', x: -120, y: -80 },
+        { id: 'JAI', label: 'Jaipur', x: -50, y: -180 },
+        { id: 'LKO', label: 'Lucknow', x: 80, y: -150 }
+    ],
+    edges: [
+        { from: 'DEL', to: 'MUM', weight: 1400 },
+        { from: 'DEL', to: 'JAI', weight: 280 },
+        { from: 'DEL', to: 'LKO', weight: 500 },
+        { from: 'MUM', to: 'PUN', weight: 150 },
+        { from: 'MUM', to: 'AMD', weight: 530 },
+        { from: 'MUM', to: 'HYD', weight: 710 },
+        { from: 'HYD', to: 'BLR', weight: 570 },
+        { from: 'HYD', to: 'CHN', weight: 630 },
+        { from: 'BLR', to: 'CHN', weight: 350 },
+        { from: 'BLR', to: 'PUN', weight: 840 },
+        { from: 'CHN', to: 'KOL', weight: 1660 },
+        { from: 'KOL', to: 'LKO', weight: 1000 },
+        { from: 'AMD', to: 'JAI', weight: 660 },
+        { from: 'JAI', to: 'DEL', weight: 280 },
+        { from: 'PUN', to: 'HYD', weight: 560 },
+        { from: 'LKO', to: 'DEL', weight: 500 },
+        { from: 'HYD', to: 'DEL', weight: 1500 },
+        { from: 'BLR', to: 'MUM', weight: 980 },
+        { from: 'CHN', to: 'HYD', weight: 630 },
+        { from: 'KOL', to: 'CHN', weight: 1660 }
+    ]
+};
+
+function loadDataset(type) {
     State.nodes.clear();
     State.edges.clear();
     State.baseWeights = {};
     State.relevanceScores = {};
     State.historyFreq = {};
 
-    DefaultGraph.nodes.forEach(n => {
+    const data = type === 'india' ? IndiaGraph : DefaultGraph;
+    
+    data.nodes.forEach(n => {
         State.nodes.add({
             id: n.id, label: n.label, x: n.x, y: n.y,
             color: { background: State.colors.default, border: '#334155' },
-            font: { color: 'white' }, shape: 'dot', size: 15
+            font: { color: 'white' }, shape: type === 'india' ? 'diamond' : 'dot', size: type === 'india' ? 18 : 15
         });
         State.relevanceScores[n.id] = 0.5; // default σ(v)
         State.historyFreq[n.id] = 0;
     });
 
-    DefaultGraph.edges.forEach(e => {
+    data.edges.forEach(e => {
         const edgeId = `${e.from}-${e.to}`;
         State.edges.add({
             id: edgeId, from: e.from, to: e.to,
             label: e.weight.toString(),
             font: { align: 'top', color: '#94a3b8', strokeWidth: 0 },
-            color: { color: '#334155' }, width: 2,
+            color: { color: '#334155' }, width: (type === 'india' && e.weight > 600) ? 3 : 2,
             arrows: { to: { enabled: true, scaleFactor: 0.5 } }
         });
         State.baseWeights[edgeId] = e.weight;
@@ -582,7 +622,11 @@ function initGraph() {
     updateDropdowns();
     calculateInitialRelevance();
     renderGraph();
-    log("Graph loaded: City Grid (15 nodes, 24 edges)", "success");
+    log(`Graph loaded: ${type === 'india' ? 'India Map' : 'City Grid'}`, "success");
+}
+
+function initGraph() {
+    loadDataset(document.getElementById('dataset-selector').value);
 }
 
 function renderGraph() {
@@ -1212,6 +1256,10 @@ function bindEvents() {
         State.mode = e.target.value;
         log(`Switched to mode: ${e.target.options[e.target.selectedIndex].text}`);
         updateTimeOfDay(State.timeOfDay); 
+    });
+    
+    document.getElementById('dataset-selector').addEventListener('change', (e) => {
+        loadDataset(e.target.value);
     });
     
     document.getElementById('btn-run-all').addEventListener('click', runAll);
