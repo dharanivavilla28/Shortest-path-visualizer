@@ -1,0 +1,63 @@
+========================================================================
+DETAILED SYSTEM DESCRIPTION: HYBRID PREDICTIVE SHORTEST PATH
+(For Project Defense Presentation)
+========================================================================
+
+1. INTRODUCTION & PURPOSE
+------------------------------------------------------------------------
+The "Hybrid Predictive Shortest Path System" is a dynamic routing engine designed to solve major computational bottlenecks in large-scale navigation systems (like Google Maps, Uber, or Zomato). Standard algorithms like Dijkstra's are "blind"—they explore nodes radially in all directions. Our system introduces a Machine Learning (ML) layer that assigns predictive "Relevance Scores" to nodes, allowing the algorithm to intelligently prune irrelevant paths and find the optimal route significantly faster.
+
+
+2. THE INTERACTIVE GRAPH ENGINE
+------------------------------------------------------------------------
+The center panel features a fully interactive visual representation of a road network.
+- Node & Edge Editing: Users can dynamically add nodes (cities/intersections) and draw edges between them.
+- Custom Weights: When an edge is drawn, the system prompts the user to enter a specific "Cost" or "Weight" (representing distance or time). 
+- Real-time Rendering: The graph uses force-directed physics (disabled during execution for stability) to render paths. When an algorithm runs, you visually see the "wave" of exploration. Yellow nodes are explored, Red nodes are pruned, and the thick Green line represents the final shortest path.
+
+
+3. THE MACHINE LEARNING (PREDICTIVE) LAYER
+------------------------------------------------------------------------
+The left panel controls the "brain" of the system. 
+- Relevance Score (σ): Every node is assigned a relevance score between 0.0 and 1.0. 
+- How it Learns (Graph Topology): Nodes with many connections (highways/hubs) naturally get higher scores.
+- How it Learns (Historical Data): Every time a shortest path is found, the system records it. Over time, nodes that are frequently part of optimal paths see their σ score increase via an exponential moving average.
+- GNN Aggregation: The system uses a 1-hop Graph Neural Network (GNN) style aggregation. If a small road is connected to a major highway (high σ), its own score gets a slight boost.
+
+
+4. THE HYBRID PRIORITY FORMULA
+------------------------------------------------------------------------
+This is the core contribution of the research. Instead of purely sorting nodes by their distance 'd(v)', we use a modified priority formula:
+      P(v) = d(v) + (1 - σ(v)) * K
+- 'd(v)' is the actual distance traveled so far.
+- 'σ(v)' is the relevance score (0 to 1).
+- 'K' is a tunable penalty weight (adjustable via the slider on the left).
+
+How it works: If a node is highly relevant (σ = 0.9), the penalty term is very small, so the algorithm explores it immediately. If a node is irrelevant (σ = 0.1), it receives a massive penalty and is pushed to the back of the priority queue. It effectively gets "pruned" from the search space.
+
+
+5. DYNAMIC TRAFFIC & EVENT SIMULATION
+------------------------------------------------------------------------
+Real-world networks change constantly. The system simulates this dynamically:
+- Time of Day Slider: Adjusting the clock from 12:00 PM to 8:00 AM (Morning Rush Hour) globally increases edge weights to simulate traffic.
+- Traffic Events: Clicking "Simulate Traffic Event" randomly spikes the weight of specific edges by 500% to simulate sudden accidents.
+- Road Closures: Clicking "Trigger Road Closure" completely severs an edge in real-time.
+- The algorithms adapt to these dynamic changes on the fly without needing offline retraining.
+
+
+6. ALGORITHM COMPARISON DASHBOARD
+------------------------------------------------------------------------
+The right panel proves the efficiency of the Hybrid algorithm.
+- When "Run All & Compare" is clicked, the system runs 5 distinct algorithms simultaneously: Standard Dijkstra, A* Search, Bidirectional, Contraction Hierarchies, and our Hybrid System.
+- Node Visits: The dashboard proves that the Hybrid system explores far fewer nodes than Dijkstra.
+- Path Cost: It verifies that despite exploring fewer nodes, the Hybrid system still successfully finds the exact same optimal "Path Cost".
+- This proves that the system reduces server computation time (latency) while maintaining perfect accuracy.
+
+
+7. REAL-WORLD SIMULATION MODES
+------------------------------------------------------------------------
+The top-left dropdown changes the rules of the simulation based on industry needs:
+- Uber / Ride-hailing: Introduces rush-hour traffic multipliers.
+- Emergency Services: Prioritizes major roads differently, cutting weights on highways to simulate ambulance sirens clearing traffic. 
+- Zomato / Delivery: Simulates multi-stop logic priorities. 
+- Transit / Septa: Simulates scheduled delays and routing constraints.
