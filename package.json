@@ -12,6 +12,7 @@
     "vite": "^8.0.4"
   },
   "dependencies": {
+    "puppeteer": "^24.42.0",
     "vis-data": "^8.0.3",
     "vis-network": "^10.0.2"
   }

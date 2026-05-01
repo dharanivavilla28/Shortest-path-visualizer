@@ -75,6 +75,9 @@ Based on your Hybrid Predictive Shortest Path System, here are the **exact resul
 
 **Recommended Setting:** τ = 0.3 provides optimal balance (42% pruning with 0% false negatives).
 
+**System Snapshot:**
+![Confidence-Aware Pruning Threshold set to 0.3](screenshots/confidence_pruning.png)
+
 ---
 
 ### Table 5: Multi-Path Discovery Capability
@@ -88,6 +91,9 @@ Based on your Hybrid Predictive Shortest Path System, here are the **exact resul
 
 **Analysis:** The predecessor-list mechanism successfully discovers **all equal-cost shortest paths**, providing route diversity essential for navigation systems when primary roads encounter unexpected closures.
 
+**System Snapshot:**
+![Multi-Path Discovery for Delhi to Jaipur](screenshots/multipath_discovery.png)
+
 ---
 
 ### Table 6: Real-World Simulation Mode Results
@@ -98,6 +104,9 @@ Based on your Hybrid Predictive Shortest Path System, here are the **exact resul
 | **Zomato** | Delivery (Restaurant→3 Customers) | Multi-stop Hybrid | 45ms | On-time delivery: 89% |
 | **Emergency** | Ambulance (Hospital→Incident) | Hybrid (K=100, Priority) | 18ms | Response time saved: 35% |
 | **Transit** | Bus route optimization | Hybrid + Schedule | 52ms | Transfer waiting: -28% |
+
+**System Snapshot:**
+![Real-World Simulation Modes Dropdown](screenshots/simulation_modes.png)
 
 ---
 
@@ -113,6 +122,9 @@ Based on your Hybrid Predictive Shortest Path System, here are the **exact resul
 | 1000 | Maximum | 4 | 15ms | ✓ Exact | Diminishing returns |
 
 **Analysis:** K=50 provides optimal trade-off between exploration reduction and safety margin. Values beyond 500 show diminishing returns as the penalty term dominates.
+
+**System Snapshot:**
+![K-Value Sensitivity Analysis Slider](screenshots/k_value_sensitivity.png)
 
 ---
 
